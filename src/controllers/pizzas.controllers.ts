@@ -5,9 +5,11 @@ import * as PizzaService from '../services/PizzaService'
 
 export const all = async (req: Request, res:Response) => {
     try {
-        const result = await PizzaService.findAllPizzas()
+        const pizzas = await PizzaService.findAllPizzas()
 
-        return res.json(result)
+        const response: defaultResponse<PizzaProps[] | never[]> = new responseDefault(true, '', pizzas)
+        res.status(200)
+        return res.json(response)
     } catch (error) {
         console.error(error)
 
@@ -30,7 +32,7 @@ export const one = async (req: Request, res:Response) => {
             return res.json(response)
         }
 
-        const response: defaultResponse<unknown> = new responseDefault(true, '', pizza)
+        const response: defaultResponse<PizzaProps> = new responseDefault(true, '', pizza)
         res.status(200)
         return res.json(response)
     } catch (error) {
@@ -114,7 +116,7 @@ export const update = async (req:Request, res:Response) => {
 
         const updatePizza = await PizzaService.updatePizza(body, id)        
 
-        const response: defaultResponse<unknown> = new responseDefault(true, 'The pizza was updated', updatePizza)
+        const response: defaultResponse<PizzaProps> = new responseDefault(true, 'The pizza was updated', updatePizza)
         res.status(200)
         return res.json(response)
         
@@ -152,3 +154,5 @@ export const remove = async (req: Request, res: Response) => {
         return res.json(response)
     }
 }
+
+// TODO: change the response of pizzas list

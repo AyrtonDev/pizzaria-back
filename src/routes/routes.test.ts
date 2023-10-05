@@ -18,3 +18,5 @@ describe('Testing api routes',() => {
             })
     })
 })
+
+// TODO: remember to make all endpoints test 

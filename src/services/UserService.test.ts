@@ -79,3 +79,5 @@ describe('Testing user service', () => {
         expect(hashNew).toBeTruthy()
     })
 })
+
+// TODO: shall create more test and make better the already exists

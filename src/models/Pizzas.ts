@@ -1,6 +1,8 @@
-import { Schema, model } from "mongoose"
+import { Document, Schema, model } from "mongoose"
+import { GeneralId } from "./DefaultResponse"
 
-export type PizzaProps = {
+export interface PizzaProps extends Document {
+    ['_id']?: GeneralId
     name: string
     available: boolean
     describe: string

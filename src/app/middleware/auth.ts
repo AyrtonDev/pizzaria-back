@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { defaultResponse, responseDefault } from "../models/defaultResponse";
-import * as UserService from '../services/UserService'
+import { ResponseDefault } from "../../models/DefaultResponse";
+import UserServices from '../services/user-services'
 import * as jose from 'jose'
+import AuthRepository from "../repositories/user-repository";
+import { verifyEmailToken } from "../../util/verify";
 
 const secretKey = Bun.env.JWT_SECRET_KEY as string
 
-export const Auth = {
-    private: async (req: Request, res: Response, next: NextFunction) => {
+const userService = new UserServices()
+const authRepositories = new AuthRepository()
+
+export default class Auth {
+    async private (req: Request, res: Response, next: NextFunction) {
         let success = false
 
         if (req.headers.authorization) {
@@ -19,7 +24,13 @@ export const Auth = {
             try {
                 const { payload } = await jose.jwtVerify(jwtToken, new TextEncoder().encode(secretKey))
 
-                const user = await UserService.findByEmail(payload.email as string)
+                const email = payload.email as string
+
+                const user = await userService.one({email}, authRepositories)
+
+                const passEmail = verifyEmailToken(req.path)
+
+                if (passEmail) req.body.email = email
 
                 if (user) success = true
             } catch (error) {
@@ -30,7 +41,7 @@ export const Auth = {
         if (success) {
             next()
         } else {
-            const response: defaultResponse<unknown> = new responseDefault(false, 'Not permitted to access without a token valid', null)
+            const response = new ResponseDefault(false, 'Not permitted to access without a token valid', null)
             
             res.status(403)
             return res.json(response) 

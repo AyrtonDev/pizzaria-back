@@ -1,6 +1,8 @@
-import { Schema, model } from "mongoose"
+import { Document, Schema, model } from "mongoose"
+import { GeneralId } from "./DefaultResponse"
 
-export type UserProps = {
+export interface UserProps extends Document {
+    ['_id']?: GeneralId
     name: string
     email: string
     password: string
@@ -10,10 +12,16 @@ export type UserProps = {
     favoritePizzas: string[] | never[]
 }
 
+export type UpdateDataProps = {
+    name: string
+    phone: number
+    address: AddressProps
+}
+
 type AddressProps = {
     street: string
     district: string
-    number: number
+    number: string
     zipcode: number
     complement?: string
 }
@@ -26,7 +34,7 @@ const schema = new Schema<UserProps>({
     address: {
         street: String,
         district: String,
-        number: Number,
+        number: String,
         zipcode: Number,
         complement: {type: String, required: false}
     },

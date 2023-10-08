@@ -1,8 +1,8 @@
 import express, { ErrorRequestHandler, Request, Response } from "express"
 import apiRoutes from "./routes"
-import { mongoConnect } from './instances/db'
+import { mongoConnect } from './database/db'
 import rateLimit from "express-rate-limit";
-import { defaultResponse, responseDefault } from "./models/defaultResponse";
+import { ResponseDefault } from "./models/DefaultResponse";
 
 const server = express();
 
@@ -32,11 +32,13 @@ server.get("/ping", (req: Request, res: Response) => res.json({ pong: true }))
 // Error default
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  const response: defaultResponse<unknown> = new responseDefault(false, 'Error internal', null)
+  const response = new ResponseDefault(false, 'Error internal', null)
 
-  err.status ? res.status(err.status) : res.status(400)
+  err.status ? res.status(err.status) : res.status(500)
 
   err.message ? res.json({ error: err.message }) : res.json(response)
+
+  next()
 }
 
 server.use(errorHandler)

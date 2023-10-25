@@ -1,15 +1,15 @@
-import { Types } from "mongoose"
+import {type Types} from 'mongoose';
 
-export type GeneralId = string | Types.ObjectId
+export type GeneralId = string | Types.ObjectId | undefined;
 
 export class ResponseDefault<T> {
-    status: boolean
-    message: string | undefined
-    data: T | null
+	statusResponse: boolean;
+	messageResponse?: string;
+	data?: T;
 
-    constructor(status: boolean, message: string, data: T | null) {
-        this.status = status;
-        this.message = message,
-        this.data = data
-    }
+	constructor(status: boolean, message: string, data: T | undefined) {
+		this.statusResponse = status;
+		this.messageResponse = message;
+		this.data = data;
+	}
 }

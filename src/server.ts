@@ -1,7 +1,7 @@
-import app from './app'
+import app from './app';
 
-const port = Bun.env.PORT_EXPRESS
+const port = Bun.env.PORT_EXPRESS;
 
 app.listen(port, () => {
-    console.log(`Listening on port ${port}...`)
+	console.log(`Listening on port ${port}...`);
 });

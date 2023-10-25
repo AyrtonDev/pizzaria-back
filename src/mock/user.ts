@@ -1,56 +1,63 @@
-import AuthRepository from "../app/repositories/user-repository"
+import {type UserRepository} from '../app/repositories/UserRepository';
+import SearchQueryProps from '../types/searchQueryProps';
+import {type UserProps} from '../models/User';
+import { Document, ObjectId } from 'mongoose';
 
-export const userMockData: any = [{
-    ['_id']: '12345',
-    name: 'Test',
-    email: 'test@test.com.br',
-    password: 'password',
-    document: 99999999999,
-    phone: 99999999999,
-    address: {
-        street: 'test',
-        district: 'test',
-        number: '9',
-        complement: '',
-        zipcode: 99999999
-    },
-    favoritePizzas: []
-}]
+type MockProps = Document & UserProps & Required<{ _id: string | ObjectId }>
 
-export const userMockBlank: any = {
-    name: '',
-    email: '',
-    password: '',
-    address: {
-        district: '',
-        number: '',
-        street: '',
-        zipcode: 0,
-        complement: ''
-    },
-    document: 0,
-    phone: 0,
-    favoritePizzas: []
-}
+export const userMock = [{
+	_id: '12345',
+	name: 'Test',
+	email: 'invalid',
+	password: 'password',
+	document: 0,
+	phone: 99999999999,
+	address: {
+		street: 'test',
+		district: 'test',
+		number: '9',
+		complement: '',
+		zipcode: 99999999,
+	},
+	favoritePizzas: [],
+}];
 
-export const userMockMethod: AuthRepository = {
-    create() {
-        return userMockBlank
-    },
-    async all() {
-        return await userMockData
-    },
-    one({ id, email, document}) {
-        if (email === 'invalid') {
-            return null
-        } else if (document === 0) {
-            return null
-        } else {
-            return userMockData[0]
-        }
-    },
-    save(data: any) {
-        return {...data, _id: '123456'}
+export const userNewMock = {
+	name: '',
+	email: '',
+	password: '',
+	address: {
+		district: '',
+		number: '',
+		street: '',
+		zipcode: 0,
+		complement: '',
+	},
+	document: 0,
+	phone: 0,
+	favoritePizzas: [],
+};
+
+export const userMockMethod: UserRepository = {
+	async all() {
+      return await userMock as MockProps[];
+  },
+	async one(search: SearchQueryProps) {
+    if (search.email === 'invalid') {
+      return await null;
     }
 
-}
+    if (search.document === 0) {
+      return await null;
+    }
+
+    return await userMock[0] as MockProps;
+  },
+  create() {
+		return userNewMock as MockProps;
+	},
+  async save(data) {
+    return await userMock[0] as MockProps
+  }
+
+};

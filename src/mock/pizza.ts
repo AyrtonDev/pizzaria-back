@@ -1,91 +1,83 @@
-export const pizzaMockData: any = [{
-    ['_id']: '123456',
-    name: 'test',
-    available: true,
-    describe: 'It is pizza time!',
-    img: '',
-    sizes: {
-        sm: {
-            available: true,
-            price: 20,
-        },
-        md: {
-            available: true,
-            price: 25
-        },
-        lg: {
-            available: true,
-            price: 30
-        }
-    }
+import { Document, ObjectId } from "mongoose";
+import {type PizzaRepository} from "../app/repositories/PizzaRepository";
+import { PizzaProps } from "../models/Pizzas";
+
+export type MockProps = Document & PizzaProps & Required<{ _id: string | ObjectId}>
+
+export const pizzaSingleMock = {
+	_id: '123456',
+	name: 'test',
+	available: true,
+	describe: 'It is pizza time!',
+	img: '',
+	sizes: {
+		sm: {
+			available: true,
+			price: 20,
+		},
+		md: {
+			available: true,
+			price: 25,
+		},
+		lg: {
+			available: true,
+			price: 30,
+		},
+	}
+};
+
+export let pizzaListMock = [{
+  _id: '123456',
+  name: 'test',
+  available: true,
+  img: ''
 }]
 
-export const pizzaMockNew: any = {
-    name: 'Test',
-    available: false,
-    describe: 'It is other pizza time!',
-    img: '',
-    sizes: {
-        sm: {
-            available: false,
-            price: 0
-        },
-        md: {
-            available: false,
-            price: 0
-        },
-        lg: {
-            available: false,
-            price: 0
-        }
-    }
-}
+export const pizzaNewMock = {
+	name: 'Test',
+	available: false,
+	describe: 'It is other pizza time!',
+	img: '',
+	sizes: {
+		sm: {
+			available: false,
+			price: 0,
+		},
+		md: {
+			available: false,
+			price: 0,
+		},
+		lg: {
+			available: false,
+			price: 0,
+		},
+	},
+};
 
-export const pizzaMockBlank: any = {
-    ['_id']: '123456',
-    name: '',
-    available: false,
-    describe: '',
-    img: '',
-    sizes: {
-        sm: {
-            available: false,
-            price: 0,
-        },
-        md: {
-            available: false,
-            price: 0
-        },
-        lg: {
-            available: false,
-            price: 0
-        }
-    }
-}
+export const pizzaMockMethod: PizzaRepository = {
 
-export const pizzaMockMethod = {
+	async all() {
+		return await pizzaListMock as MockProps[];
+	},
 
-    all() {
-        return pizzaMockData
-    },
+	async one(id: string) {
+      if (id === 'invalid') {
+			  return await null;
+		  }
 
-    one(id: string) {
-        if (id === 'invalid') {
-            return null
-        } else {
-            return pizzaMockData[0]
-        }
-    },
+		  return await pizzaSingleMock as MockProps
+	},
 
-    create() {
-        return pizzaMockBlank
-    },
+	create() {
+		return pizzaNewMock as MockProps;
+	},
 
-    save(data: any) {
-        return data
-    },
+  async save(data) {
+    return await pizzaSingleMock as MockProps
+  },
 
-    delete(data: any) {
-        return data
-    },
-}
+  async delete(data) {
+    pizzaListMock = []
+    return await pizzaSingleMock as MockProps
+  }
+};

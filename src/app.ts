@@ -1,46 +1,60 @@
-import express, { ErrorRequestHandler, Request, Response } from "express"
-import apiRoutes from "./routes"
-import { mongoConnect } from './database/db'
-import rateLimit from "express-rate-limit";
-import { ResponseDefault } from "./models/DefaultResponse";
+import express, {type ErrorRequestHandler, type Request, type Response} from 'express';
+import apiRoutes from './routes';
+import {mongoConnect} from './database/db';
+import rateLimit from 'express-rate-limit';
+import {ResponseDefault} from './models/DefaultResponse';
+import swaggerUI from 'swagger-ui-express';
+import * as swaggerDocument from './swagger.json';
 
 const server = express();
 
-server.use(express.json())
+server.use(express.json());
 
-// access limiter
+// Config documentation in Swagger
+
+server.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+
+// Access limiter
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 request per windowMs,
-  message: 'Too many requests, please try again later',
-  validate: {ip: false}
-})
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 100, // Limit each IP to 100 request per windowMs,
+	message: 'Too many requests, please try again later',
+	validate: {ip: false},
+});
 
-server.use(limiter)
+server.use(limiter);
 
 // Connection with Mongo
 
-mongoConnect()
+await mongoConnect();
 
 // Others
 
-server.use(apiRoutes)
+server.use(apiRoutes);
 
-server.get("/ping", (req: Request, res: Response) => res.json({ pong: true }))
+server.get('/ping', (req: Request, res: Response) => res.json({pong: true}));
 
 // Error default
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  const response = new ResponseDefault(false, 'Error internal', null)
+	const response = new ResponseDefault(false, 'Error internal', null);
 
-  err.status ? res.status(err.status) : res.status(500)
+	if (err.status) {
+		res.status(err.status as number);
+	} else {
+		res.status(500);
+	}
 
-  err.message ? res.json({ error: err.message }) : res.json(response)
+	if (err.message) {
+		res.json({error: err.message as string});
+	} else {
+		res.json(response);
+	}
 
-  next()
-}
+	next();
+};
 
-server.use(errorHandler)
+server.use(errorHandler);
 
-export default server
+export default server;
